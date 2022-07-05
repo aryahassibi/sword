@@ -6,7 +6,8 @@ app.use(express.text({ limit: '10mb' }))
 let fs = require('fs')
 let readData = fs.readFileSync('english_words.txt', 'utf8')
 let englishWordsDataBase = readData.split('\n')
-let theWord = englishWordsDataBase[Math.floor(Math.random() * englishWordsDataBase.length)];
+// let theWord = englishWordsDataBase[Math.floor(Math.random() * englishWordsDataBase.length)];
+let theWord = "abcdef";
 
 console.log(englishWordsDataBase)
 
@@ -22,5 +23,6 @@ app.get('/pick', (request, response) => {
 });
 
 app.get('/length', (request, response) => {
+  console.log(theWord, theWord.length)
   response.json({ result: theWord.length })
 });

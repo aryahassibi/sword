@@ -14,12 +14,12 @@ async function wordLength() {
   return result;
 }
 
-pickTheWord();
+//pickTheWord();
 
-let theWord = "happy";
+let theWord = "shades";
 let modif_word = theWord;
-const word_length = theWord.length;
-const number_of_tries = word_length + 1;
+let word_length;
+let number_of_tries;
 
 const BG = 230;
 const LIGHT_BG = 250;
@@ -29,7 +29,7 @@ const BLUE = [22, 37, 131]
 const LIGHTBLUE = [113, 128, 153]
 const RED = [255, 62, 48]
 const grayKey = 210
-let gradient = 255 / (number_of_tries + 1)
+let gradient;
 
 let attempts = ['']
 
@@ -129,14 +129,17 @@ function giveColor(number_of_attempt, lastGuess = false) {
 }
 
 
-function setup() {
+async function setup() {
   createCanvas(windowWidth, windowHeight);
+  word_length = await wordLength();
+  number_of_tries = word_length + 1;
+  gradient = 255 / (number_of_tries + 1)
+
 }
 
 async function draw() {
-
+  console.log(word_length)
   rectMode(CENTER);
-  //console.log(canvasH())
   resizeCanvas(windowWidth, windowHeight);
   background(BG);
   textSize(square_size() * 80 / 100);
@@ -150,7 +153,8 @@ async function draw() {
   for (let i = 0; i < attempts[attempts.length - 1].length; i++) {
     if (finish) {
       fill(lastGuessColors[i])
-    } else {
+    }
+    else {
       if (notAnAcceptableWord) {
         fill(RED)
       }
@@ -248,6 +252,7 @@ async function draw() {
         }
         else if (attempts.length < number_of_tries) {
           attempts.push('');
+          console.log("pushed")
         }
         else if (attempts.length == number_of_tries) {
           finish = true;
@@ -269,7 +274,7 @@ async function draw() {
 }
 
 async function keyTyped() {
-  await wordLength();
+  // await wordLength();
   if (keyCode == ENTER && attempts[attempts.length - 1].length == word_length) {
     if (await theWordExists(attempts[attempts.length - 1])) {
       if (attempts[attempts.length - 1].toUpperCase() == theWord.toUpperCase()) {
@@ -287,9 +292,6 @@ async function keyTyped() {
     else {
       notAnAcceptableWord = true;
     }
-
-
-
   }
   else if (((unchar(key) >= unchar('a') && unchar(key) <= unchar('z')) || (unchar(key) >= unchar('A') && unchar(key) <= unchar('Z'))) && attempts[attempts.length - 1].length < word_length) {
     attempts[attempts.length - 1] += key
