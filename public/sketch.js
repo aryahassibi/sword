@@ -100,7 +100,7 @@ async function theWordExists(givenWord) {
 // - The first object is an array containing the color of the latter tiles 
 // - The second object is a dictionary containing the color info for the special keys on the keyboard
 async function getColor(indexOfTheAttempt, lastGuess = false) {
-  console.log(attempts[indexOfTheAttempt], attempts, indexOfTheAttempt)
+  // console.log(attempts[indexOfTheAttempt], attempts, indexOfTheAttempt)
   const options = {
     method: 'POST',
     headers: {
@@ -116,7 +116,7 @@ async function getColor(indexOfTheAttempt, lastGuess = false) {
   for (let item in specialKeyColors) {
     keyboardKeyColors[item] = specialKeyColors[item]
   }
-  console.log(jsonResponse);
+  // console.log(jsonResponse);
   return colors;
 }
 
@@ -240,7 +240,13 @@ async function draw() {
         }
         else if (attempts.length < number_of_tries) {
           attempts.push('');
-          console.log("pushed")
+          // fetching the color of the square tiles from the server
+          previousAttemptsColors = []
+          for (let j = 0; j < attempts.length - 1; j++) {
+            // console.log("hello", attempts[j])
+            previousAttemptsColors.push(await getColor(j))
+            // console.log(previousAttemptsColors)
+          }
         }
         else if (attempts.length == number_of_tries) {
           finish = true;
@@ -269,13 +275,12 @@ async function keyTyped() {
         lastGuessColors = await getColor(attempts.length - 1, true)
       }
       else if (attempts.length < number_of_tries) {
+        attempts.push('');
         // fetching the color of the square tiles from the server
         previousAttemptsColors = []
-        for (let j = 0; j < attempts.length; j++) {
+        for (let j = 0; j < attempts.length - 1; j++) {
           previousAttemptsColors.push(await getColor(j))
         }
-        console.log("meowmeow", previousAttemptsColors)
-        attempts.push('');
       }
       else if (attempts.length == number_of_tries) {
         finish = true;
