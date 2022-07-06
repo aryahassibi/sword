@@ -106,7 +106,12 @@ async function getColor(indexOfTheAttempt, lastGuess = false) {
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ currentAttempt: attempts[indexOfTheAttempt], indexOfTheAttempt, lastGuess })
+    body: JSON.stringify({
+      currentAttempt: attempts[indexOfTheAttempt],
+      indexOfTheAttempt,
+      lastGuess,
+      numberOfAllAttempts: attempts.length
+    })
   };
   const response = await fetch('/pickColor', options);
   const jsonResponse = await response.json();

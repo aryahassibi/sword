@@ -10,7 +10,9 @@ let readData = fs.readFileSync('english_words.txt', 'utf8')
 let englishWordsDataBase = readData.split('\n')
 // let theWord = englishWordsDataBase[Math.floor(Math.random() * englishWordsDataBase.length)];
 let theWord = "shades";
-let wordLength = theWord.length
+let wordLength = theWord.length;
+let maxNumberOfAttempts = wordLength + 1;
+
 // the keys and tiles colors
 const GREEN = [3, 222, 134]
 const YELLOW = [255, 206, 99]
@@ -44,6 +46,7 @@ app.post('/pickColor', (request, response) => {
   let currentAttempt = request.body.currentAttempt
   let indexOfTheAttempt = request.body.indexOfTheAttempt
   let lastGuess = request.body.lastGuess
+  let numberOfAllAttempts = request.body.numberOfAllAttempts
   specialKeyColors = {}
   let colors = []
   modifiableWordCopy = theWord
@@ -62,7 +65,7 @@ app.post('/pickColor', (request, response) => {
 
       }
       else {
-        colors.push(BLUE.concat([gradient * (indexOfTheAttempt + 1)]))
+        colors.push(BLUE.concat([gradient * (maxNumberOfAttempts - numberOfAllAttempts + indexOfTheAttempt + 1)]))
       }
     }
   }
