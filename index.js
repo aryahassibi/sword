@@ -8,8 +8,8 @@ app.use(express.json({ limit: "1mb" }))
 let fs = require('fs')
 let readData = fs.readFileSync('english_words.txt', 'utf8')
 let englishWordsDataBase = readData.split('\n')
-// let theWord = englishWordsDataBase[Math.floor(Math.random() * englishWordsDataBase.length)];
-let theWord = "shades";
+let theWord = englishWordsDataBase[Math.floor(Math.random() * englishWordsDataBase.length)];
+// let theWord = "shades";
 let wordLength = theWord.length;
 let maxNumberOfAttempts = wordLength + 1;
 
@@ -20,24 +20,32 @@ const BLUE = [22, 37, 131]
 const grayKey = 210
 const gradient = 255 / (wordLength + 2);
 
-console.log(englishWordsDataBase)
 
 app.post('/checkTheWord', (request, response) => {
-  console.log(englishWordsDataBase.includes(request.body))
   response.json({ result: englishWordsDataBase.includes(request.body) })
 });
 
+// picks a random word fromt he data base between the length of 4 and 7
 app.get('/pick', (request, response) => {
   theWord = englishWordsDataBase[Math.floor(Math.random() * englishWordsDataBase.length)];
   wordLength = theWord.length
-  console.log(theWord)
+  while (wordLength < 4 || wordLength > 7) {
+    theWord = englishWordsDataBase[Math.floor(Math.random() * englishWordsDataBase.length)];
+    wordLength = theWord.length
+  }
   response.json({ result: "succesful" })
 });
 
 app.get('/length', (request, response) => {
-  console.log(theWord, theWord.length)
   response.json({ result: theWord.length })
 });
+
+// receives the users last attempts and return a boolean indicating wether the answer is correct or not.
+app.post('/correct', (request, response) => {
+  let currentAttempt = request.body
+  response.json({ result: currentAttempt.toUpperCase() == theWord.toUpperCase() })
+});
+
 // Sending the a json file bck to the server containing two object based on the index of the attempt and the text associated with it.
 // - The first object is an array containing the color of the latter tiles 
 // - The second object is a dictionary containing the color info for the special keys on the keyboard

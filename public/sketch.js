@@ -12,10 +12,8 @@ async function wordLength() {
   return result;
 }
 
-//pickTheWord();
+pickTheWord();
 
-let theWord = "shades";
-let modif_word = theWord;
 let word_length;
 let number_of_tries;
 
@@ -123,6 +121,21 @@ async function getColor(indexOfTheAttempt, lastGuess = false) {
   }
   // console.log(jsonResponse);
   return colors;
+}
+
+// sends the last attempt to the server and recieves a boolean indicating whether the answer is correct or not
+async function theLastAttemptIsCorrect() {
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'text/plain'
+    },
+    body: attempts[attempts.length - 1].toUpperCase()
+  }
+  const response = await fetch('/correct', options);
+  const jsonResponse = await response.json();
+  const result = await jsonResponse.result
+  return result;
 }
 
 async function setup() {
@@ -239,7 +252,7 @@ async function draw() {
     fill(keyPressedColor)
     if (firstPress && attempts[attempts.length - 1].length == word_length) {
       if (await theWordExists(attempts[attempts.length - 1])) {
-        if (attempts[attempts.length - 1].toUpperCase() == theWord.toUpperCase()) {
+        if (await theLastAttemptIsCorrect()) {
           finish = true
           lastGuessColors = await getColor(attempts.length - 1, true)
         }
@@ -275,7 +288,7 @@ async function draw() {
 async function keyTyped() {
   if (keyCode == ENTER && attempts[attempts.length - 1].length == word_length) {
     if (await theWordExists(attempts[attempts.length - 1])) {
-      if (attempts[attempts.length - 1].toUpperCase() == theWord.toUpperCase()) {
+      if (await theLastAttemptIsCorrect()) {
         finish = true
         lastGuessColors = await getColor(attempts.length - 1, true)
       }
