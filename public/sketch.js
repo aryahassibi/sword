@@ -2,7 +2,6 @@ async function pickTheWord() {
   const response = await fetch('/pick');
   const jsonResponse = await response.json();
   const result = await jsonResponse.result
-  console.log(result)
 }
 
 async function wordLength() {
@@ -98,7 +97,6 @@ async function theWordExists(givenWord) {
 // - The first object is an array containing the color of the latter tiles 
 // - The second object is a dictionary containing the color info for the special keys on the keyboard
 async function getColor(indexOfTheAttempt, lastGuess = false) {
-  // console.log(attempts[indexOfTheAttempt], attempts, indexOfTheAttempt)
   const options = {
     method: 'POST',
     headers: {
@@ -119,7 +117,6 @@ async function getColor(indexOfTheAttempt, lastGuess = false) {
   for (let item in specialKeyColors) {
     keyboardKeyColors[item] = specialKeyColors[item]
   }
-  // console.log(jsonResponse);
   return colors;
 }
 
@@ -201,7 +198,7 @@ async function draw() {
       keyRightSide = keyLeftSide + buttonWidth()
       keyTopSide = keyboardTopPadding() + i * (buttonHeight() + keyPadding())
       keyBottomSide = keyTopSide + buttonHeight()
-      if (mouseX >= keyLeftSide && mouseX <= keyRightSide && mouseY >= keyTopSide && mouseY <= keyBottomSide && aKeyIsDown) {
+      if (mouseX >= keyLeftSide && mouseX <= keyRightSide && mouseY >= keyTopSide && mouseY <= keyBottomSide && mouseIsPressed) {
         fill(keyPressedColor)
         if (firstPress && attempts[attempts.length - 1].length < word_length) {
           attempts[attempts.length - 1] += keys[i][j]
@@ -229,7 +226,7 @@ async function draw() {
 
   // BACKSPACE BUTTON
   fill(keyDefaultColor)
-  if (mouseX >= keyLeftSide && mouseX <= keyRightSide && mouseY >= keyTopSide && mouseY <= keyBottomSide && aKeyIsDown) {
+  if (mouseX >= keyLeftSide && mouseX <= keyRightSide && mouseY >= keyTopSide && mouseY <= keyBottomSide && mouseIsPressed) {
     fill(keyPressedColor)
     if (firstPress && !finish) {
       attempts[attempts.length - 1] = attempts[attempts.length - 1].slice(0, -1);
@@ -248,7 +245,7 @@ async function draw() {
   keyRightSide = keyLeftSide + bigButtonWidth
 
   fill(keyDefaultColor)
-  if (mouseX >= keyLeftSide && mouseX <= keyRightSide && mouseY >= keyTopSide && mouseY <= keyBottomSide && aKeyIsDown) {
+  if (mouseX >= keyLeftSide && mouseX <= keyRightSide && mouseY >= keyTopSide && mouseY <= keyBottomSide && mouseIsPressed) {
     fill(keyPressedColor)
     if (firstPress && attempts[attempts.length - 1].length == word_length) {
       if (await theWordExists(attempts[attempts.length - 1])) {
@@ -256,14 +253,13 @@ async function draw() {
           finish = true
           lastGuessColors = await getColor(attempts.length - 1, true)
         }
-        else if (attempts.length < number_of_tries) {
+        // if there are tries left and the last attempt has not already been sent to server ( ... != "")
+        else if (attempts.length < number_of_tries && attempts[attempts.length - 1] != "") {
           attempts.push('');
           // fetching the color of the square tiles from the server
           previousAttemptsColors = []
           for (let j = 0; j < attempts.length - 1; j++) {
-            // console.log("hello", attempts[j])
             previousAttemptsColors.push(await getColor(j))
-            // console.log(previousAttemptsColors)
           }
         }
         else if (attempts.length == number_of_tries) {

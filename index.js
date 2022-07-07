@@ -26,11 +26,11 @@ app.post('/checkTheWord', (request, response) => {
   response.json({ result: englishWordsDataBase.includes(request.body) })
 });
 
-// picks a random word fromt he data base between the length of 4 and 7
+// picks a random word fromt he data base between the length of 4 and 6
 app.get('/pick', (request, response) => {
   theWord = englishWordsDataBase[Math.floor(Math.random() * englishWordsDataBase.length)];
   wordLength = theWord.length
-  while (wordLength < 4 || wordLength > 7) {
+  while (wordLength < 4 || wordLength > 6) {
     theWord = englishWordsDataBase[Math.floor(Math.random() * englishWordsDataBase.length)];
     wordLength = theWord.length
   }
@@ -51,7 +51,6 @@ app.post('/correct', (request, response) => {
 // - The first object is an array containing the color of the latter tiles 
 // - The second object is a dictionary containing the color info for the special keys on the keyboard
 app.post('/pickColor', (request, response) => {
-  console.log(request.body)
   let currentAttempt = request.body.currentAttempt
   let indexOfTheAttempt = request.body.indexOfTheAttempt
   let lastGuess = request.body.lastGuess
@@ -59,37 +58,38 @@ app.post('/pickColor', (request, response) => {
   specialKeyColors = {}
   let colors = []
   modifiableWordCopy = theWord
-  for (let i = 0; i < wordLength; i++) {
-    if (modifiableWordCopy[i].toUpperCase() == currentAttempt[i].toUpperCase()) {
-      colors.push(GREEN)
-      modifiableWordCopy = modifiableWordCopy.slice(0, i) + '_' + modifiableWordCopy.slice(i + 1);
-      specialKeyColors[currentAttempt[i].toUpperCase()] = GREEN
-    }
-    else {
-      if (!(currentAttempt[i].toUpperCase() in specialKeyColors) && !theWord.toUpperCase().includes(currentAttempt[i].toUpperCase())) {
-        specialKeyColors[currentAttempt[i].toUpperCase()] = grayKey
-      }
-      if (lastGuess) {
-        colors.push(BLUE)
-
+  if (currentAttempt.length == theWord.length) {
+    for (let i = 0; i < wordLength; i++) {
+      if (modifiableWordCopy[i].toUpperCase() == currentAttempt[i].toUpperCase()) {
+        colors.push(GREEN)
+        modifiableWordCopy = modifiableWordCopy.slice(0, i) + '_' + modifiableWordCopy.slice(i + 1);
+        specialKeyColors[currentAttempt[i].toUpperCase()] = GREEN
       }
       else {
-        colors.push(BLUE.concat([gradient * (maxNumberOfAttempts - numberOfAllAttempts + indexOfTheAttempt + 1)]))
-      }
-    }
-  }
-  for (let i = 0; i < wordLength; i++) {
-    for (let k = 0; k < wordLength; k++) {
-      if (colors[i] != GREEN && modifiableWordCopy[k].toUpperCase() == currentAttempt[i].toUpperCase()) {
-        colors[i] = YELLOW
-        modifiableWordCopy = modifiableWordCopy.slice(0, k) + '_' + modifiableWordCopy.slice(k + 1);
-        if (!(currentAttempt[i].toUpperCase() in specialKeyColors)) {
-          specialKeyColors[currentAttempt[i].toUpperCase()] = YELLOW
+        if (!(currentAttempt[i].toUpperCase() in specialKeyColors) && !theWord.toUpperCase().includes(currentAttempt[i].toUpperCase())) {
+          specialKeyColors[currentAttempt[i].toUpperCase()] = grayKey
         }
-        break;
+        if (lastGuess) {
+          colors.push(BLUE)
+
+        }
+        else {
+          colors.push(BLUE.concat([gradient * (maxNumberOfAttempts - numberOfAllAttempts + indexOfTheAttempt + 1)]))
+        }
       }
     }
+    for (let i = 0; i < wordLength; i++) {
+      for (let k = 0; k < wordLength; k++) {
+        if (colors[i] != GREEN && modifiableWordCopy[k].toUpperCase() == currentAttempt[i].toUpperCase()) {
+          colors[i] = YELLOW
+          modifiableWordCopy = modifiableWordCopy.slice(0, k) + '_' + modifiableWordCopy.slice(k + 1);
+          if (!(currentAttempt[i].toUpperCase() in specialKeyColors)) {
+            specialKeyColors[currentAttempt[i].toUpperCase()] = YELLOW
+          }
+          break;
+        }
+      }
+    }
+    response.json({ colors: colors, specialKeyColors })
   }
-  console.log({ colors: colors, specialKeyColors })
-  response.json({ colors: colors, specialKeyColors })
 });
